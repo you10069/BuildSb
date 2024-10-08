@@ -27,14 +27,14 @@ jobs:
     - name: Build Windows V3
       run: |
         cd mihomo
-        go env -w ${{ ENV_WINDOWS }}
+        go env -w ${{ env.ENV_WINDOWS }}
         go build -tags "with_gvisor" -v -o mihomo.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/mihomo
         cd ..
 
     - name: Build Windows V2
       run: |
         cd mihomo
-        go env -w ${{ ENV_WINDOWS_V2 }}
+        go env -w ${{ env.ENV_WINDOWS_V2 }}
         go build -tags "with_gvisor" -v -o mihomo-v2.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/mihomo
         cd ..
 
