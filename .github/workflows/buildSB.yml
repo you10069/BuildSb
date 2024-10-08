@@ -31,20 +31,13 @@ jobs:
         cd sing-box
         go env -w ${{ env.ENV_LINUX }}
         go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
-
-    - name: Package
-      run: |
+        ls -l sing-box
         cd ..
-        mkdir sb
-        cp sing-box/sing-box sb/
-        tar -zcvf sb.tar.gz sb
 
-    - name: Upload
-      uses: svenstaro/upload-release-action@v2
+    - name: Upload files
+      uses: actions/upload-artifact@v3
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: 1.9.7
-        file: sb.tar.gz
-        asset_name: sb.tar.gz
-        prerelease: true
-        overwrite: true
+        name: sing-box
+        path: |
+          sing-box/sing-box
+          sing-box/sing-box.exe
