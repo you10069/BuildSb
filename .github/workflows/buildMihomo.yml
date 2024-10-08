@@ -22,7 +22,7 @@ jobs:
 
     - name: git clone
       run: |
-        git clone -b ${{ env.VERSION }} https://github.com/MetaCubeX/mihomo
+        git clone -b Meta https://github.com/amaliasal/mihomo
 
     - name: Build Windows V3
       run: |
