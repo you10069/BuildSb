@@ -31,7 +31,7 @@ jobs:
 
     - name: List built files
       run: |
-        ls -l sing-box sing-box.exe sing-box-v2 sing-box-v2.exe
+        ls -l sing-box.exe
 
     - name: Upload files
       uses: actions/upload-artifact@v4
