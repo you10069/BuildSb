@@ -1,6 +1,10 @@
 name: buildSB
 
 env:
+  ENV_LINUX_V2: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v2
+  ENV_WINDOWS_V2: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v2
+  ENV_LINUX: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v3
+  ENV_WINDOWS: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v3
   TAG_LINUX: with_gvisor,with_reality_server,with_quic,with_utls,with_ech,with_dhcp,with_wireguard,with_acme,with_clash_api,with_v2ray_api,with_grpc
   TAG_WINDOWS: with_gvisor,with_reality_server,with_quic,with_utls,with_ech,with_dhcp,with_wireguard,with_acme,with_clash_api,with_v2ray_api,with_grpc
 
@@ -21,40 +25,26 @@ jobs:
     - name: git clone
       run: |
         git clone -b v1.9.7 https://github.com/SagerNet/sing-box
+
+    - name: go build
+      run: |
         cd sing-box
-
-    - name: Build Linux V2
-      run: |
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v2 go build -tags ${{ env.TAG_LINUX }} -v -o sing-boxv2 -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
-
-    - name: Build Windows V2
-      run: |
-        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v2 go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-boxv2.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
-
-    - name: Build Linux V3
-      run: |
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v3 go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
-
-    - name: Build Windows V3
-      run: |
-        CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v3 go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
+        go env -w ${{ env.ENV_LINUX }}
+        go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
 
     - name: Package
       run: |
         cd ..
-        mkdir SING-BOX
-        cp sing-box/sing-boxv2 SING-BOX/
-        cp sing-box/sing-boxv2.exe SING-BOX/
-        cp sing-box/sing-box SING-BOX/
-        cp sing-box/sing-box.exe SING-BOX/
-        tar -zcvf SING-BOX.tar.gz SING-BOX
+        mkdir sb
+        cp sing-box/sing-box sb/
+        tar -zcvf sb.tar.gz sb
 
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: 1.9.7
-        file: SING-BOX.tar.gz
-        asset_name: SING-BOX.tar.gz
+        file: sb.tar.gz
+        asset_name: sb.tar.gz
         prerelease: true
         overwrite: true
