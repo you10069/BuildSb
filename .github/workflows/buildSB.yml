@@ -63,19 +63,19 @@ jobs:
 
     - name: Package
       run: |
-        mkdir sb-${{ env.ENV_WINDOWS_V2 }}
-        cp sing-box/sing-box sb-${{ env.ENV_WINDOWS_V2 }}/
-        cp sing-box/sing-box.exe sb-${{ env.ENV_WINDOWS_V2 }}/
-        cp sing-box/sing-box-v2 sb-${{ env.ENV_WINDOWS_V2 }}/
-        cp sing-box/sing-box-v2.exe sb-${{ env.ENV_WINDOWS_V2 }}/
-        tar -zcvf sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz sb-${{ env.ENV_WINDOWS_V2 }}
+        mkdir sb-${{ env.VERSION }}
+        cp sing-box/sing-box sb-${{ env.VERSION }}/
+        cp sing-box/sing-box.exe sb-${{ env.VERSION }}/
+        cp sing-box/sing-box-v2 sb-${{ env.VERSION }}/
+        cp sing-box/sing-box-v2.exe sb-${{ env.VERSION }}/
+        tar -zcvf sb-${{ env.VERSION }}.tar.gz sb-${{ env.VERSION }}
 
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ env.ENV_WINDOWS_V2 }}
-        file: sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz
-        asset_name: sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz
+        tag: ${{ env.VERSION }}
+        file: sb-${{ env.VERSION }}.tar.gz
+        asset_name: sb-${{ env.VERSION }}.tar.gz
         prerelease: true
         overwrite: true
