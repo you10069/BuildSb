@@ -1,6 +1,7 @@
 name: buildSB
 
 env:
+  VERSION: v1.9.7
   ENV_WINDOWS: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v3
   TAG_WINDOWS: with_gvisor,with_reality_server,with_quic,with_utls,with_ech,with_dhcp,with_wireguard,with_acme,with_clash_api,with_v2ray_api,with_grpc
 
@@ -20,15 +21,15 @@ jobs:
 
     - name: git clone
       run: |
-        export VERSION=v1.9.7
-        git clone -b $VERSION https://github.com/SagerNet/sing-box
+        git clone -b ${{ env.VERSION }} https://github.com/SagerNet/sing-box
 
     - name: go build
       run: |
         cd sing-box
         go env -w ${{ env.ENV_WINDOWS }}
-        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${VERSION}' -s -w -buildid=" ./cmd/sing-box
-
+        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/sing-box
+        cd ..
+        
     - name: List built files
       run: |
         cd sing-box
