@@ -36,8 +36,9 @@ jobs:
         go env -w ${{ env.ENV_LINUX }}
         go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
         go env -w ${{ env.ENV_WINDOWS }}
-        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
-        
+        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box        
+        cd ..
+
         mkdir SING-BOX
         cp sing-box-v2 SING-BOX/
         cp sing-box-v2.exe SING-BOX/
