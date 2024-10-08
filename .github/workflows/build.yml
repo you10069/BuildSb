@@ -36,17 +36,17 @@ jobs:
         go env -w ${{ env.ENV_LINUX }}
         go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
         go env -w ${{ env.ENV_WINDOWS }}
-        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box        
-        cd ..
-
-        mkdir SING-BOX
-        cp sing-box-v2 SING-BOX/
-        cp sing-box-v2.exe SING-BOX/
-        cp sing-box SING-BOX/
-        cp sing-box.exe SING-BOX/
+        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-s -w -buildid=" ./cmd/sing-box
 
     - name: Package
-      run: tar -zcvf SING-BOX.tar.gz SING-BOX
+      run: |
+        cd ..
+        mkdir SING-BOX
+        cp sing-box/sing-box-v2 SING-BOX/
+        cp sing-box/sing-box-v2.exe SING-BOX/
+        cp sing-box/sing-box SING-BOX/
+        cp sing-box/sing-box.exe SING-BOX/
+        tar -zcvf SING-BOX.tar.gz SING-BOX
 
     - name: Upload
       uses: svenstaro/upload-release-action@v2
