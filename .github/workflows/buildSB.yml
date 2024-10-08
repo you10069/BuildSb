@@ -2,7 +2,11 @@ name: buildSB
 
 env:
   VERSION: v1.9.7
+  ENV_LINUX: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v3
   ENV_WINDOWS: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v3
+  ENV_LINUX_V2: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOAMD64=v2
+  ENV_WINDOWS_V2: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOAMD64=v2
+  TAG_LINUX: with_gvisor,with_reality_server,with_quic,with_utls,with_ech,with_dhcp,with_wireguard,with_acme,with_clash_api,with_v2ray_api,with_grpc
   TAG_WINDOWS: with_gvisor,with_reality_server,with_quic,with_utls,with_ech,with_dhcp,with_wireguard,with_acme,with_clash_api,with_v2ray_api,with_grpc
 
 on:
@@ -23,21 +27,45 @@ jobs:
       run: |
         git clone -b ${{ env.VERSION }} https://github.com/SagerNet/sing-box
 
-    - name: go build
+    - name: Build Linux V3
+      run: |
+        cd sing-box
+        go env -w ${{ env.ENV_LINUX }}
+        go build -tags ${{ env.TAG_LINUX }} -v -o sing-box -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/sing-box
+        cd ..
+
+    - name: Build Windows V3
       run: |
         cd sing-box
         go env -w ${{ env.ENV_WINDOWS }}
         go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box.exe -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/sing-box
         cd ..
-        
+
+    - name: Build Linux V2
+      run: |
+        cd sing-box
+        go env -w ${{ env.ENV_LINUX_V2 }}
+        go build -tags ${{ env.TAG_LINUX }} -v -o sing-box-v2 -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/sing-box
+        cd ..
+
+    - name: Build Windows V2
+      run: |
+        cd sing-box
+        go env -w ${{ env.ENV_WINDOWS_V2 }}
+        go build -tags ${{ env.TAG_WINDOWS }} -v -o sing-box-v2.exe -trimpath -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/sing-box
+        cd ..
+
     - name: List built files
       run: |
         cd sing-box
-        ls -l sing-box.exe
+        ls -l sing-box sing-box.exe sing-box-v2 sing-box-v2.exe
 
     - name: Upload files
       uses: actions/upload-artifact@v4
       with:
         name: sing-box
         path: |
+          sing-box/sing-box
           sing-box/sing-box.exe
+          sing-box/sing-box-v2
+          sing-box/sing-box-v2.exe
