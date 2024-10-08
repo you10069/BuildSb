@@ -59,13 +59,23 @@ jobs:
       run: |
         cd sing-box
         ls -l sing-box sing-box.exe sing-box-v2 sing-box-v2.exe
+        cd ..
 
-    - name: Upload files
-      uses: actions/upload-artifact@v4
+    - name: Package
+      run: |
+        mkdir sb-${{ env.ENV_WINDOWS_V2 }}
+        cp sing-box/sing-box sb-${{ env.ENV_WINDOWS_V2 }}/
+        cp sing-box/sing-box.exe sb-${{ env.ENV_WINDOWS_V2 }}/
+        cp sing-box/sing-box-v2 sb-${{ env.ENV_WINDOWS_V2 }}/
+        cp sing-box/sing-box-v2.exe sb-${{ env.ENV_WINDOWS_V2 }}/
+        tar -zcvf sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz sb-${{ env.ENV_WINDOWS_V2 }}
+
+    - name: Upload
+      uses: svenstaro/upload-release-action@v2
       with:
-        name: sing-box
-        path: |
-          sing-box/sing-box
-          sing-box/sing-box.exe
-          sing-box/sing-box-v2
-          sing-box/sing-box-v2.exe
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.ENV_WINDOWS_V2 }}
+        file: sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz
+        asset_name: sb-${{ env.ENV_WINDOWS_V2 }}.tar.gz
+        prerelease: true
+        overwrite: true
