@@ -1,0 +1,62 @@
+name: buildMihomo
+
+env:
+  VERSION: v1.18.9
+  ENV_WINDOWS: GOOS=windows GOARCH=amd64 GOAMD64=v3
+  ENV_WINDOWS_V2: GOOS=windows GOARCH=amd64 GOAMD64=v2
+
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        cache: false
+
+    - name: git clone
+      run: |
+        git clone -b ${{ env.VERSION }} https://github.com/MetaCubeX/mihomo
+
+    - name: Build Windows V3
+      run: |
+        cd mihomo
+        go env -w ${{ ENV_WINDOWS }}
+        go build -tags "with_gvisor" -v -o mihomo.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/mihomo
+        cd ..
+
+    - name: Build Windows V2
+      run: |
+        cd mihomo
+        go env -w ${{ ENV_WINDOWS_V2 }}
+        go build -tags "with_gvisor" -v -o mihomo-v2.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid=" ./cmd/mihomo
+        cd ..
+
+    - name: List built files
+      run: |
+        cd mihomo
+        ls -l mihomo.exe mihomo-v2.exe
+        cd ..
+
+    - name: Package
+      run: |
+        mkdir mihomo-${{ env.VERSION }}
+        cp mihomo/mihomo.exe mihomo-${{ env.VERSION }}/
+        cp mihomo/mihomo-v2.exe mihomo-${{ env.VERSION }}/
+        tar -zcvf mihomo-${{ env.VERSION }}.tar.gz mihomo-${{ env.VERSION }}
+
+    - name: Upload
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.VERSION }}
+        file: mihomo-${{ env.VERSION }}.tar.gz
+        asset_name: mihomo-${{ env.VERSION }}.tar.gz
+        prerelease: true
+        overwrite: true
