@@ -22,7 +22,7 @@ jobs:
 
     - name: git clone
       run: |
-        git clone --depth 1 https://github.com/SagerNet/sing-box.git
+        git clone -b v1.9.7 https://github.com/SagerNet/sing-box
 
     - name: go build
       run: | 
