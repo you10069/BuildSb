@@ -42,7 +42,7 @@ jobs:
 
     - name: Use my feeds
       run: |
-        cp -f padavanonly/Redmi-AX6000-23.05/feeds.conf.defaul immortalwrt-mt798x-23.05/feeds.conf.defaul
+        cp -f $GITHUB_WORKSPACE/padavanonly/Redmi-AX6000-23.05/feeds.conf.defaul immortalwrt-mt798x-23.05/feeds.conf.defaul
 
     - name: Update feeds
       run: |
@@ -52,7 +52,7 @@ jobs:
 
     - name: Use my config
       run: |
-        cp -f padavanonly/Redmi-AX6000-23.05/.config immortalwrt-mt798x-23.05/.config
+        cp -f $GITHUB_WORKSPACE/padavanonly/Redmi-AX6000-23.05/.config immortalwrt-mt798x-23.05/.config
 
     - name: Build Firmware
       run: |
