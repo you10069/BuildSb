@@ -40,12 +40,12 @@ jobs:
       run: |
         git clone -b openwrt-23.05 --single-branch --filter=blob:none https://github.com/padavanonly/immortalwrt-mt798x-23.05
 
+    - name: Space show
+      run: df -hT
+
     - name: Use my feeds
       run: |
         cp -f $GITHUB_WORKSPACE/padavanonly/Redmi-AX6000-23.05/feeds.conf.default immortalwrt-mt798x-23.05/feeds.conf.default
-
-    - name: Space show
-      run: df -hT
 
     - name: Update feeds
       run: |
