@@ -57,6 +57,14 @@ jobs:
       run: |
         cp -f $GITHUB_WORKSPACE/padavanonly/Redmi-AX6000-23.05/.config immortalwrt-mt798x-23.05/.config
 
+    - name: Download package
+      run: |
+        cd immortalwrt-mt798x-23.05
+        make defconfig
+        make download -j$(nproc)
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
     - name: Build Firmware
       run: |
         cd immortalwrt-mt798x-23.05
