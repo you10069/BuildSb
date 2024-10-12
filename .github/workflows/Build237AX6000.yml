@@ -54,6 +54,14 @@ jobs:
         cd immortalwrt-mt798x
         cp -f defconfig/mt7986-ax6000-mtwifi-cfg.config .config
 
+    - name: Download package
+      run: |
+        cd immortalwrt-mt798x
+        make defconfig
+        make download -j$(nproc)
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
     - name: Build Firmware
       run: |
         cd immortalwrt-mt798x
