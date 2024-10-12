@@ -75,7 +75,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.TAG_NAME }}
-        file: edmi-AX6000-2105.tar.gz
-        asset_name: edmi-AX6000-2105.tar.gz
+        file: Redmi-AX6000-2105.tar.gz
+        asset_name: Redmi-AX6000-2105.tar.gz
         prerelease: true
         overwrite: true
