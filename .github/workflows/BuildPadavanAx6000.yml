@@ -40,7 +40,7 @@ jobs:
       run: |
         git clone -b openwrt-23.05 --single-branch --filter=blob:none https://github.com/padavanonly/immortalwrt-mt798x-23.05
 
-    - name: Space show
+    - name: Space show before
       run: df -hT
 
     - name: Use my feeds
@@ -60,6 +60,7 @@ jobs:
     - name: Download package
       run: |
         cd immortalwrt-mt798x-23.05
+        echo -e "$(nproc) thread compile"
         make defconfig
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
@@ -75,6 +76,9 @@ jobs:
     - name: Package Firmware
       run: |
         tar -zcvf Redmi-AX6000-2305.tar.gz immortalwrt-mt798x-23.05/bin/targets
+
+    - name: Space show after
+      run: df -hT
 
     - name: Set variables
       run: |
