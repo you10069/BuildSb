@@ -40,7 +40,7 @@ jobs:
       run: |
         git clone --depth=1 https://github.com/padavanonly/immortalwrt-mt798x.git
 
-    - name: Space show
+    - name: Space show before
       run: df -hT
 
     - name: Use my feeds
@@ -60,6 +60,7 @@ jobs:
     - name: Download package
       run: |
         cd immortalwrt-mt798x
+        echo -e "$(nproc) thread compile"
         make defconfig
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
@@ -75,6 +76,9 @@ jobs:
     - name: Package Firmware
       run: |
         tar -zcvf Redmi-AX6000-2105.tar.gz immortalwrt-mt798x/bin/targets
+
+    - name: Space show after
+      run: df -hT
 
     - name: Set variables
       run: |
