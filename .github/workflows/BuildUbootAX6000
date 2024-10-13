@@ -1,0 +1,71 @@
+name: Build uboot AX6000
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps:
+
+    - name: Maximize build space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        # this might remove tools that are actually needed,if set to "true" but frees about 6 GB
+        tool-cache: true
+        # all of these default to true, but feel free to set to "false" if necessary for your workflow
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        swap-storage: true
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo -E apt-get update
+        sudo -E apt-get install -y gcc-aarch64-linux-gnu build-essential flex bison libssl-dev device-tree-compiler
+        sudo docker image prune --all --force
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get autoremove -y --purge
+        sudo -E apt-get clean
+
+    - name: Clone source code
+      run: |
+        git clone --depth=1 https://github.com/hanwckf/bl-mt798x.git
+
+    - name: Space show before
+      run: df -hT
+
+    - name: Build Uboot AX6000
+      run: |
+        cd bl-mt798x
+        SOC=mt7986 BOARD=redmi_ax6000 MULTI_LAYOUT=1 ./build.sh
+
+    - name: Package Firmware
+      run: |
+        tar -zcvf Redmi-AX6000-Uboot.tar.gz bl-mt798x/output
+
+    - name: Space show after
+      run: df -hT
+
+    - name: Set variables
+      run: |
+        echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Upload
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ env.TAG_NAME }}
+        file: Redmi-AX6000-Uboot.tar.gz
+        asset_name: Redmi-AX6000-Uboot.tar.gz
+        prerelease: true
+        overwrite: true
