@@ -28,6 +28,7 @@ jobs:
       run: |
         cd mihomo
         go env -w ${{ env.ENV_WINDOWS }}
+        go mod download
         go build -tags "with_gvisor" -v -o mihomo.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
         cd ..
 
@@ -35,6 +36,7 @@ jobs:
       run: |
         cd mihomo
         go env -w ${{ env.ENV_WINDOWS_V2 }}
+        go mod download
         go build -tags "with_gvisor" -v -o mihomo-v2.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
         cd ..
 
