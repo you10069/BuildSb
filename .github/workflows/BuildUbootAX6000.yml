@@ -10,31 +10,12 @@ jobs:
 
     steps:
 
-    - name: Maximize build space
-      uses: jlumbroso/free-disk-space@main
-      with:
-        # this might remove tools that are actually needed,if set to "true" but frees about 6 GB
-        tool-cache: true
-        # all of these default to true, but feel free to set to "false" if necessary for your workflow
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        swap-storage: true
-
-    - name: Checkout
-      uses: actions/checkout@v4
-
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get update
         sudo -E apt-get install -y gcc-aarch64-linux-gnu build-essential flex bison libssl-dev device-tree-compiler
-        sudo docker image prune --all --force
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
-        sudo -E apt-get autoremove -y --purge
-        sudo -E apt-get clean
 
     - name: Clone source code
       run: |
