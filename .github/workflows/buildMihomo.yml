@@ -1,9 +1,10 @@
-name: buildMihomo
+name: build Mihomo
 
 env:
   VERSION: v1.18.9
   ENV_WINDOWS: GOOS=windows GOARCH=amd64 GOAMD64=v3
   ENV_WINDOWS_V2: GOOS=windows GOARCH=amd64 GOAMD64=v2
+  ENV_WINDOWS_V1: GOOS=windows GOARCH=amd64 GOAMD64=v1
 
 
 on:
@@ -40,10 +41,18 @@ jobs:
         go build -tags "with_gvisor" -v -o mihomo-v2.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
         cd ..
 
+    - name: Build Windows V1
+      run: |
+        cd mihomo
+        go env -w ${{ env.ENV_WINDOWS_V1 }}
+        go mod download
+        go build -tags "with_gvisor" -v -o mihomo-v1.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
+        cd ..
+
     - name: List built files
       run: |
         cd mihomo
-        ls -l mihomo.exe mihomo-v2.exe
+        ls -l mihomo.exe mihomo-v2.exe mihomo-v1.exe
         cd ..
 
     - name: Package
@@ -51,6 +60,7 @@ jobs:
         mkdir mihomo-${{ env.VERSION }}
         cp mihomo/mihomo.exe mihomo-${{ env.VERSION }}/
         cp mihomo/mihomo-v2.exe mihomo-${{ env.VERSION }}/
+        cp mihomo/mihomo-v1.exe mihomo-${{ env.VERSION }}/
         tar -zcvf mihomo-${{ env.VERSION }}.tar.gz mihomo-${{ env.VERSION }}
 
     - name: Upload
@@ -61,4 +71,4 @@ jobs:
         file: mihomo-${{ env.VERSION }}.tar.gz
         asset_name: mihomo-${{ env.VERSION }}.tar.gz
         prerelease: true
-        overwrite: true
+        overwrite: false
