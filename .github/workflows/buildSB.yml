@@ -78,4 +78,4 @@ jobs:
         file: sb-${{ env.VERSION }}.tar.gz
         asset_name: sb-${{ env.VERSION }}.tar.gz
         prerelease: true
-        overwrite: true
+        overwrite: false
