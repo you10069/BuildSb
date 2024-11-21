@@ -93,25 +93,30 @@ jobs:
         ls -l sing-box sing-box.exe sing-box-v2 sing-box-v2.exe sing-box-v4 sing-box-v4.exe sing-box-v1 sing-box-v1.exe
         cd ..
 
+    - name: Set variables
+      run: |
+        echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+      shell: bash
+
     - name: Package
       run: |
-        mkdir sb-${{ env.VERSION }}
-        cp sing-box/sing-box sb-${{ env.VERSION }}/
-        cp sing-box/sing-box.exe sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v2 sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v2.exe sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v4 sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v4.exe sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v1 sb-${{ env.VERSION }}/
-        cp sing-box/sing-box-v1.exe sb-${{ env.VERSION }}/
-        tar -zcvf sb-${{ env.VERSION }}.tar.gz sb-${{ env.VERSION }}
+        mkdir sb-${{ env.VERSION }}-${{ env.TAG_NAME }}
+        cp sing-box/sing-box sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box.exe sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v2 sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v2.exe sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v4 sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v4.exe sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v1 sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp sing-box/sing-box-v1.exe sb-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        tar -zcvf sb-${{ env.VERSION }}-${{ env.TAG_NAME }}.tar.gz sb-${{ env.VERSION }}-${{ env.TAG_NAME }}
 
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ env.VERSION }}
-        file: sb-${{ env.VERSION }}.tar.gz
-        asset_name: sb-${{ env.VERSION }}.tar.gz
+        tag: sb-${{ env.VERSION }}-${{ env.TAG_NAME }}
+        file: sb-${{ env.VERSION }}-${{ env.TAG_NAME }}.tar.gz
+        asset_name: sb-${{ env.VERSION }}-${{ env.TAG_NAME }}.tar.gz
         prerelease: true
         overwrite: false
