@@ -27,7 +27,7 @@ jobs:
 
     - name: Build Windows V3
       run: |
-        cd mihomo
+        cd mihomo-1.18.10
         go env -w ${{ env.ENV_WINDOWS }}
         go mod download
         go build -tags "with_gvisor" -v -o mihomo.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
@@ -35,7 +35,7 @@ jobs:
 
     - name: Build Windows V2
       run: |
-        cd mihomo
+        cd mihomo-1.18.10
         go env -w ${{ env.ENV_WINDOWS_V2 }}
         go mod download
         go build -tags "with_gvisor" -v -o mihomo-v2.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
@@ -43,7 +43,7 @@ jobs:
 
     - name: Build Windows V1
       run: |
-        cd mihomo
+        cd mihomo-1.18.10
         go env -w ${{ env.ENV_WINDOWS_V1 }}
         go mod download
         go build -tags "with_gvisor" -v -o mihomo-v1.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
@@ -51,7 +51,7 @@ jobs:
 
     - name: List built files
       run: |
-        cd mihomo
+        cd mihomo-1.18.10
         ls -l mihomo.exe mihomo-v2.exe mihomo-v1.exe
         cd ..
 
@@ -63,9 +63,9 @@ jobs:
     - name: Package
       run: |
         mkdir mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}
-        cp mihomo/mihomo.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
-        cp mihomo/mihomo-v2.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
-        cp mihomo/mihomo-v1.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp mihomo-1.18.10/mihomo.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp mihomo-1.18.10/mihomo-v2.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
+        cp mihomo-1.18.10/mihomo-v1.exe mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}/
         tar -zcvf mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}.tar.gz mihomo-${{ env.VERSION }}-${{ env.TAG_NAME }}
 
     - name: Upload
