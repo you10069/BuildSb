@@ -1,4 +1,4 @@
-name: build Mihomo new
+name: build Mihomo 1.18.10
 
 env:
   VERSION: v1.18.10
@@ -55,7 +55,7 @@ jobs:
         cd mihomo-1.18.10
         go env -w ${{ env.ENV_WINDOWS_V4 }}
         go mod download
-        go build -tags "with_gvisor" -v -o mihomo-v3.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
+        go build -tags "with_gvisor" -v -o mihomo-v4.exe -trimpath -ldflags "-X 'github.com/metacubex/mihomo/constant.Version=${{ env.VERSION }}' -s -w -buildid="
         cd ..
 
     - name: List built files
