@@ -20,11 +20,16 @@ jobs:
       - run: go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
       - run: ~/go/bin/xcaddy build --with github.com/caddyserver/forwardproxy=github.com/klzgrad/forwardproxy@naive --with github.com/caddy-dns/cloudflare
 
+      - name: Set variables
+        run: |
+          echo "TAG_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload caddy
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.BUNDLE }}
+          tag: ${{ env.BUNDLE }}-${{ env.TAG_DATE }}
           file: caddy
           asset_name: caddy
           prerelease: true
