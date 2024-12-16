@@ -186,4 +186,4 @@ jobs:
         file: sb-plus-${{ env.VERSION }}-${{ env.TAG_DATE }}.tar.gz
         asset_name: sb-plus-${{ env.VERSION }}-${{ env.TAG_DATE }}.tar.gz
         prerelease: true
-        overwrite: false
+        overwrite: true
