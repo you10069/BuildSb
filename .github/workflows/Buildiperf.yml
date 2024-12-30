@@ -1,0 +1,63 @@
+name: build iperf for windows
+
+env:
+  VERSION: 3.18
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          build-essential \
+          autoconf \
+          automake \
+          libtool \
+          pkg-config \
+          mingw-w64 \
+          git \
+          wget \
+          zip \
+          unzip
+
+    - name: Git clone iperf
+      run: |
+        git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf
+
+    - name: Build iperf for Windows
+      run: |
+        cd iperf
+        ./autogen.sh
+        ./configure --host=x86_64-w64-mingw32 CFLAGS="-static" CXXFLAGS="-static"
+        make
+        cd ..
+
+    - name: Set variables
+      run: |
+        echo "TAG_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Package
+      run: |
+        mkdir iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
+        cp iperf/src/iperf3.exe iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
+        zip -r iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
+
+    - name: Upload
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
+        file: iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip
+        asset_name: iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip
+        prerelease: true
+        overwrite: false
