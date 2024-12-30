@@ -36,7 +36,6 @@ jobs:
     - name: Build iperf for Windows
       run: |
         cd iperf
-        ./autogen.sh
         ./configure --host=x86_64-w64-mingw32 CFLAGS="-static" CXXFLAGS="-static"
         make
         cd ..
