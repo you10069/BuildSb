@@ -38,7 +38,7 @@ jobs:
     # Step 6: Build iPerf for Windows with static linking
     - name: Build iPerf for Windows (Static)
       run: |
-        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./autogen.sh && ./configure CFLAGS='-static' CXXFLAGS='-static' LDFLAGS='-static' && make"
+        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./configure CFLAGS='-static' CXXFLAGS='-static' && make"
 
     # Step 7: Set date tag for packaging
     - name: Set variables
@@ -51,6 +51,7 @@ jobs:
       run: |
         mkdir iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         cp iperf/src/iperf3.exe iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
+        cp C:\\cygwin\\bin\\cygwin1.dll iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         zip -r iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
 
     # Step 9: Upload the release asset
