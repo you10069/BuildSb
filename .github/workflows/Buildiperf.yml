@@ -18,7 +18,7 @@ jobs:
     # Step 2: Install Cygwin and required packages via Chocolatey
     - name: Install Cygwin with dependencies
       run: |
-        choco install cygwin --params "/InstallDir:C:\\cygwin /Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf"
+        choco install cygwin --params "/InstallDir:C:\\cygwin /Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf,dos2unix"
 
     # Step 3: Set Cygwin Path to ensure bash is found
     - name: Set Cygwin Path
@@ -30,25 +30,30 @@ jobs:
       run: |
         C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
 
-    # Step 5: Build iPerf for Windows with static linking
+    # Step 5: Convert configure file from DOS to UNIX line endings
+    - name: Convert configure script line endings
+      run: |
+        C:\\cygwin\\bin\\bash.exe -lc "dos2unix iperf/configure"
+
+    # Step 6: Build iPerf for Windows with static linking
     - name: Build iPerf for Windows (Static)
       run: |
-        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./configure CFLAGS='-static' CXXFLAGS='-static' && make"
+        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./autogen.sh && ./configure CFLAGS='-static' CXXFLAGS='-static' LDFLAGS='-static' && make"
 
-    # Step 6: Set date tag for packaging
+    # Step 7: Set date tag for packaging
     - name: Set variables
       run: |
         echo "TAG_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
       shell: bash
 
-    # Step 7: Package the build into a zip file
+    # Step 8: Package the build into a zip file
     - name: Package
       run: |
         mkdir iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         cp iperf/src/iperf3.exe iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         zip -r iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
 
-    # Step 8: Upload the release asset
+    # Step 9: Upload the release asset
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
