@@ -38,7 +38,7 @@ jobs:
     # Step 6: Build iPerf for Windows with static linking
     - name: Build iPerf for Windows (Static)
       run: |
-        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./configure CFLAGS='-static' CXXFLAGS='-static' && make"
+        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./configure && make"
 
     # Step 7: Set date tag for packaging
     - name: Set variables
