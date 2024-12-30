@@ -22,11 +22,11 @@ jobs:
         # Download the Cygwin installer
         curl -o setup-x86_64.exe https://cygwin.com/setup-x86_64.exe
         
-        # Install necessary packages (like gcc, make, etc.)
-        ./setup-x86_64.exe -q -P gcc-core,gcc-g++,make,git,wget
-        
-    # Step 3: Install dependencies (e.g., iperf source, etc.)
-    - name: Install iperf dependencies
+        # Run the Cygwin setup to install required packages
+        start /wait setup-x86_64.exe -q -P gcc-core,gcc-g++,make,git,wget
+
+    # Step 3: Clone the iperf repository
+    - name: Clone the iperf repository
       shell: bash
       run: |
         # Clone the iperf repository
@@ -40,25 +40,21 @@ jobs:
         cd iperf
         ./configure CFLAGS="-static" CXXFLAGS="-static"
         make
-        
-    # Step 5: Run iperf tests (optional)
-    - name: Run iperf tests
-      shell: bash
-      run: |
-        # Example iperf command to check if the build works
-        ./src/iperf3 -v
 
+    # Step 5: Set environment variable for packaging
     - name: Set variables
       run: |
         echo "TAG_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
       shell: bash
 
+    # Step 6: Package the build
     - name: Package
       run: |
         mkdir iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         cp iperf/src/iperf3.exe iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         zip -r iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
-
+        
+    # Step 7: Upload release
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
