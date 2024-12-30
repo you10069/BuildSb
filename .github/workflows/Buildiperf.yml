@@ -20,6 +20,10 @@ jobs:
         choco install cygwin --params "/InstallDir:C:\\cygwin"
         choco install cygwin --params "/Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf"
 
+    - name: Set Cygwin Path
+      run: |
+        echo "C:\\cygwin\\bin" >> $GITHUB_PATH
+
     - name: Git clone iperf
       run: |
         C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
