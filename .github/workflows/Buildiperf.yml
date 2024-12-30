@@ -9,28 +9,44 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+    
     steps:
-    - name: Checkout repository
+    # Step 1: Checkout the repository
+    - name: Checkout code
       uses: actions/checkout@v2
-
+    
+    # Step 2: Set up Cygwin environment
     - name: Install Cygwin
+      shell: bash
       run: |
-        choco install cygwin
-        choco install cygwin --params "/InstallDir:C:\\cygwin"
-        choco install cygwin --params "/Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf"
-
-    - name: Set Cygwin Path
+        # Download the Cygwin installer
+        curl -o setup-x86_64.exe https://cygwin.com/setup-x86_64.exe
+        
+        # Install necessary packages (like gcc, make, etc.)
+        ./setup-x86_64.exe -q -P gcc-core,gcc-g++,make,git,wget
+        
+    # Step 3: Install dependencies (e.g., iperf source, etc.)
+    - name: Install iperf dependencies
+      shell: bash
       run: |
-        echo "C:\\cygwin\\bin" >> $GITHUB_PATH
-
-    - name: Git clone iperf
+        # Clone the iperf repository
+        git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf
+        cd iperf
+        
+    # Step 4: Build iperf
+    - name: Build iperf
+      shell: bash
       run: |
-        C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
-
-    - name: Build iPerf for Windows
+        cd iperf
+        ./configure CFLAGS="-static" CXXFLAGS="-static"
+        make
+        
+    # Step 5: Run iperf tests (optional)
+    - name: Run iperf tests
+      shell: bash
       run: |
-        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./autogen.sh && ./configure && make"
+        # Example iperf command to check if the build works
+        ./src/iperf3 -v
 
     - name: Set variables
       run: |
