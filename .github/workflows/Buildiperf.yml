@@ -30,11 +30,6 @@ jobs:
       run: |
         C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
 
-    # Step 5: Convert configure file from DOS to UNIX line endings
-    - name: Convert configure script line endings
-      run: |
-        C:\\cygwin\\bin\\bash.exe -lc "dos2unix iperf/configure"
-
     # Step 6: Build iPerf for Windows with static linking
     - name: Build iPerf for Windows (Static)
       run: |
