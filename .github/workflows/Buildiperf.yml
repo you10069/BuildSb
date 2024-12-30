@@ -1,4 +1,4 @@
-name: build iperf for windows
+name: Build iPerf for Windows
 
 env:
   VERSION: 3.18
@@ -8,37 +8,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install Cygwin
       run: |
-        sudo apt update
-        sudo apt install -y \
-          build-essential \
-          autoconf \
-          automake \
-          libtool \
-          pkg-config \
-          mingw-w64 \
-          git \
-          wget \
-          zip \
-          unzip
+        choco install cygwin
+        choco install cygwin --params "/InstallDir:C:\\cygwin"
+        choco install cygwin --params "/Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf"
 
     - name: Git clone iperf
       run: |
-        git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf
+        C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
 
-    - name: Build iperf for Windows
+    - name: Build iPerf for Windows
       run: |
-        cd iperf
-        ./configure --host=x86_64-w64-mingw32 CFLAGS="-static" CXXFLAGS="-static"
-        make
-        cd ..
+        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./autogen.sh && ./configure && make"
 
     - name: Set variables
       run: |
