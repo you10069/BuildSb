@@ -9,52 +9,46 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
     # Step 1: Checkout the repository
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v2
-    
-    # Step 2: Set up Cygwin environment
-    - name: Install Cygwin
-      shell: bash
-      run: |
-        # Download the Cygwin installer
-        curl -o setup-x86_64.exe https://cygwin.com/setup-x86_64.exe
-        
-        # Run the Cygwin setup to install required packages
-        start /wait setup-x86_64.exe -q -P gcc-core,gcc-g++,make,git,wget
 
-    # Step 3: Clone the iperf repository
-    - name: Clone the iperf repository
-      shell: bash
+    # Step 2: Install Cygwin and required packages via Chocolatey
+    - name: Install Cygwin with dependencies
       run: |
-        # Clone the iperf repository
-        git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf
-        cd iperf
-        
-    # Step 4: Build iperf
-    - name: Build iperf
-      shell: bash
-      run: |
-        cd iperf
-        ./configure CFLAGS="-static" CXXFLAGS="-static"
-        make
+        choco install cygwin --params "/InstallDir:C:\\cygwin /Packages:make,git,gcc-core,gcc-g++,libtool,automake,autoconf"
 
-    # Step 5: Set environment variable for packaging
+    # Step 3: Set Cygwin Path to ensure bash is found
+    - name: Set Cygwin Path
+      run: |
+        echo "C:\\cygwin\\bin" >> $GITHUB_PATH
+
+    # Step 4: Clone the iperf repository
+    - name: Git clone iperf
+      run: |
+        C:\\cygwin\\bin\\bash.exe -lc "git clone -b ${{ env.VERSION }} https://github.com/esnet/iperf"
+
+    # Step 5: Build iPerf for Windows with static linking
+    - name: Build iPerf for Windows (Static)
+      run: |
+        C:\\cygwin\\bin\\bash.exe -lc "cd iperf && ./configure CFLAGS='-static' CXXFLAGS='-static' && make"
+
+    # Step 6: Set date tag for packaging
     - name: Set variables
       run: |
         echo "TAG_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
       shell: bash
 
-    # Step 6: Package the build
+    # Step 7: Package the build into a zip file
     - name: Package
       run: |
         mkdir iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         cp iperf/src/iperf3.exe iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
         zip -r iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}.zip iperf-${{ env.VERSION }}-${{ env.TAG_DATE }}
-        
-    # Step 7: Upload release
+
+    # Step 8: Upload the release asset
     - name: Upload
       uses: svenstaro/upload-release-action@v2
       with:
